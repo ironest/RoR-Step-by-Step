@@ -24,14 +24,62 @@ bundle install
 ```
 After a project is created (or cloned from github) it’s necessary to check whether any gem is needed. This commands reads from the Gemfile.
 
-### 4 Database
+### 4 Database Creation
 ```
 rails db:create
-rails db:migrate
+```
+When a Rails application is created for the first time, it will not have a database yet. To be create one, those commands are needed.
+The command initializes/creates a database (named after the project). To be more accurate, it creates two versions of the same DB. one for development and one for testing purposes.
+
+### 4 Model generation
+```
+rails g model <Entity> <column>:<datatype> <column>:<datatype>
+```
+This is a Model scaffold generator that produces two effects:
+1. It generates a new migration file (under `./db/migrate/`), containing the code to create a new table (named `<Entities>`) with the specified columns.
+2. It generates an active-record file (under `./app/models/`)
+
+Notes:
+* Entity must be capitalized
+* Entity must be singular
+* If Entity represents a join table, the naming convention becomes EntitiesEntity. The priority of Entities over Entity is determined by the alphabetic order.
+* Even though the Entity keyword is singular, the migration file produces a table having a plural form.
+
+##### More examples of Model generation
+```
+rails g model Author name:string date_of_birth:date
+rails g model Genre name:string
+rails g model Book title:string
+rails g model BooksGenre book:references genre:references
+rails g model Movie title:string rating:integer
+rails g model Actor name:string birthdate:date
+rails g model ActorsMovie movie:references actor:references character:string
+rails g model Image imageable:references{polymorphic} url:string
 ```
 
-When a Rails application is created for the first time, it will not have a database yet. To be create one, those commands are needed.
+### 5 Database Migration
+```
+rails db:migrate
+```
+The command applies any pending migrations. Pending migration means setting up tables in the database (or alter tables or drop tables). When running the migration command, it will look in db/migrate/ for any Ruby files and execute them starting from the oldest.
 
-The first command initializes/creates a database named after the project. To be more accurate, it creates two versions of the same DB. one for development and one for testing purposes.
+### 6 Model association
+Even the simplest of the databases likely has models/tables with some osort of relationship with each other.
+Examples are:
+* one to one
+* one to many
+* many to many
 
-The second command populates any migration.
+Even though at the Database level those relationship are already set up through FK, it's necessarily to replicate the integrity logic in the application layer. To do so, few changes have to be applied in the ruby files under `./app/models/`
+
+```ruby
+belongs_to :movie
+has_one :address
+has_many :actors_movies
+has_many :actors, through: :actors_movies
+```
+
+Notes
+* `has_one` is followed by a singular symbol
+* `has_many` is followed by a plural symbol
+* a join table must have two `belongs_to` keywords
