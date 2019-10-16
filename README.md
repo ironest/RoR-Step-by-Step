@@ -63,6 +63,20 @@ rails db:migrate
 ```
 The command applies any pending migrations. Pending migration means setting up tables in the database (or alter tables or drop tables). When running the migration command, it will look in db/migrate/ for any Ruby files and execute them starting from the oldest.
 
+##### Migration generation
+Another way to generate migrations (other than from the Model generation) is to submit the commands such as:
+```
+# Table creations
+rails g migration CreateAuthors name:string date_of_birth:date
+rails g migration CreateBooks title:string author:string rating:integer
+
+# Adding columns
+rails g migration AddOverviewToBooks overview:string
+
+# Removing columns
+rails g migration RemovePublisherFromBooks column:datatype
+```
+
 ### 6 Model association
 Even the simplest of the databases likely has models/tables with some osort of relationship with each other.
 Examples are:
@@ -83,3 +97,28 @@ Notes
 * `has_one` is followed by a singular symbol
 * `has_many` is followed by a plural symbol
 * a join table must have two `belongs_to` keywords
+
+### 7 Routes confiuguration
+Routes are configured inside `./config/routes.rb`
+
+There are two possible options.
+##### Option 1
+```ruby
+get "/entities", to: "entities#index", as: "entities"
+get "/entities/new", to: "entities#new", as: "new_entity"
+post "/entities", to: "entities#create"
+get "/entities/:id", to: "entities#show", as: "entity"
+get "/entities/:id/edit", to: "entities#edit", as: "edit_entity"
+put "/entities/:id", to: "entities#update"
+patch "/entities/:id", to: "entities#update"
+delete "/entities/:id", to: "entities#destroy"
+```
+
+##### Option 2
+Resource routing allows you to quickly declare all of the common routes for a given resourceful controller. Instead of declaring separate routes for your index, show, new, edit, create, update and destroy actions, a resourceful route declares them in a single line of code.
+
+```ruby
+resources :entities
+```
+
+### 8 Controller creation
