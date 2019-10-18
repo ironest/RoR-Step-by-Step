@@ -75,6 +75,13 @@ rails g migration AddOverviewToBooks overview:string
 
 # Removing columns
 rails g migration RemovePublisherFromBooks column:datatype
+
+# Replacing column (new migration)
+rails g migration RemoveTypeFromIngredients type:integer
+rails g migration AddKindToIngredients kind:integer
+rails db:migrate
+
+# Go to VScode, change models containing old column name
 ```
 
 ### 6 Model association
