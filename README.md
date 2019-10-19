@@ -31,7 +31,7 @@ rails db:create
 When a Rails application is created for the first time, it will not have a database yet. To be create one, those commands are needed.
 The command initializes/creates a database (named after the project). To be more accurate, it creates two versions of the same DB. one for development and one for testing purposes.
 
-### 4 Model generation
+### 5 Model generation
 ```
 rails g model <Entity> <column>:<datatype> <column>:<datatype>
 ```
@@ -57,7 +57,7 @@ rails g model ActorsMovie movie:references actor:references character:string
 rails g model Image imageable:references{polymorphic} url:string
 ```
 
-### 5 Database Migration
+### 6 Database Migration
 ```
 rails db:migrate
 ```
@@ -77,7 +77,7 @@ rails g migration AddOverviewToBooks overview:string
 rails g migration RemovePublisherFromBooks column:datatype
 ```
 
-### 6 Model association
+### 7 Model association
 Even the simplest of the databases likely has models/tables with some osort of relationship with each other.
 Examples are:
 * one to one
@@ -98,7 +98,7 @@ Notes
 * `has_many` is followed by a plural symbol
 * a join table must have two `belongs_to` keywords
 
-### 7 Routes confiuguration
+### 8 Routes confiuguration
 Routes are configured inside `./config/routes.rb`
 
 There are two possible options.
@@ -121,4 +121,31 @@ Resource routing allows you to quickly declare all of the common routes for a gi
 resources :entities
 ```
 
-### 8 Controller creation
+### 9 Controller creation
+
+Controller files have to be manually created under `./app/controller/`. The naming convention for such files is `entities_controller.rb` (everything lower-case and plural form).
+
+The content of each controller starts with a class declaration having the following structure:
+
+```ruby
+class MilkshakesController < ApplicationController
+
+end
+```
+
+##### Methods definition
+A controller is expected to have a method for each route defined in the `routes.rb` file.
+
+Example: if the route-file contains an action corresponding to `entities#index`, then the controller-file is supposed to implement the `index` method.
+
+```ruby
+class EntitiesController < ApplicationController
+    def index
+    end
+end
+```
+
+### 10 View creation
+In the MVC design patter, Views are the interface of an application. In Ruby on Rails, that refers to the actual web-page returned to a user.
+
+Views are usually placed under `./app/views`
