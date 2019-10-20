@@ -175,9 +175,65 @@ end
 ### 10 View creation
 In the MVC design patter, Views are the interface of an application. In Ruby on Rails, that refers to the actual web-page returned to a user.
 
-Views are usually placed under `./app/views`
+Views are usually placed under `./app/views` and they connect to the Controller via manually created directories and HTML.erb files of the routes. The directories are named after the Controllers. SASS files for the views are located in `./app/assets/stylesheets`.
 
-### X Command shortcuts
+Example:
+Route: get `"/milkshakes", to: "milkshakes#index", as: "milkshakes"`
+**M**odel: `./app/models/milkshake.rb`
+**V**iew: `./app/views/milkshakes/index.html.erb`
+**C**ontroller: `./app/controllers/milkshakes_controller.rb`
+SASS: `./app/assets/stylesheets/milkshake_index.scss`
+
+Notes
+* directories are pluralised
+* HTML.erb View files are necessary to render Ruby code
+* Ruby code a HTML.erb file is written between `<% %>`, with the addition of `<%= %>` if the result is to be printed to the screen
+* the SASS file is the home of the Rails app HTML and CSS
+* CSS classes are added to the HTML.erb file
+
+### 10.X Forms
+
+```ruby
+<main id="milkshake-index">
+    <div class="banner-img"></div>
+    <h1>All Milkshakes</h1>
+```
+```ruby
+    <form action="<%= milkshakes_path %>" method="GET">
+        <input type="search" name="search" />
+    </form>
+    <%= link_to("Create Milkshake", new_milkshake_path) %>
+```
+`link_to` is a Rails helper method that hyperlinks pagesfor the user like the `<a href>` anchor tag and hypertext reference attribute in HTML.
+
+The text and URL after the `link_to` method are arguements `("Create Milkshake", new_milkshake_path)`.
+
+Instead of hardcoding the route, the `_path` method can be used.
+
+```ruby
+    <section>
+        <% @milkshakes.each do |milkshake| %>
+            <%= link_to(milkshake) do %>
+                <div>
+                    <img src="<%= milkshake.image.url %>" />
+                    <h2><%= milkshake.name %></h2>
+                    <p><%= number_to_currency(milkshake.price / 100.0) %></p>
+                </div>
+            <% end %>
+        <% end %>
+    </section>
+</main>
+```
+
+The `link_to` method takes an optional block `<% image_tag "Example" %>` where the content of the block becomes the clickable hyperlinked item (text, image, other HTML element).
+
+### X Rails command table
+
+| Command | Description |
+| ------ | ------ |
+| rake router | Displays all Rails routes |
+
+### X Shortcuts
 
 | Command | shorthand |
 | ------ | ------ |
