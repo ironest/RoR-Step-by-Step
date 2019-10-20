@@ -56,6 +56,22 @@ rails g model Actor name:string birthdate:date
 rails g model ActorsMovie movie:references actor:references character:string
 rails g model Image imageable:references{polymorphic} url:string
 ```
+### 5.x Rails 5 native field types
+
+| field types | Description |
+| ------ | ------ |
+| :integer | whole numbers |
+| :primary_key | unique key that can uniquely identify each row in a table |
+| :decimal | for decimals, more accurate but slower processing time than :float |
+| :float | for decimals, less accurate but faster processing time than :decimal |
+| :boolean | stores true or false values |
+| :binary | is for storing data such as images, audio, or movies |
+| :string | for titles or names <=255 characters |
+| :text | for paragraphs or descriptions <=30K characters |
+| :date | store date only |
+| :time | store time only |
+| :datetime | store the date and time, unaffected by time zone, format: YYYY-MM-DD HH:MM:SS |
+| :references | generates a foreign key column e.g.  album:references creates album_id, use in 'belongs_to' association, supports polymorphism |
 
 ### 6 Database Migration
 ```
@@ -111,15 +127,19 @@ Routes are configured inside `./config/routes.rb`
 There are two possible options.
 ##### Option 1
 ```ruby
-get "/entities", to: "entities#index", as: "entities"
-get "/entities/new", to: "entities#new", as: "new_entity"
-post "/entities", to: "entities#create"
-get "/entities/:id", to: "entities#show", as: "entity"
-get "/entities/:id/edit", to: "entities#edit", as: "edit_entity"
-put "/entities/:id", to: "entities#update"
-patch "/entities/:id", to: "entities#update"
-delete "/entities/:id", to: "entities#destroy"
+1. get "/entities", to: "entities#index", as: "entities"
+2. get "/entities/new", to: "entities#new", as: "new_entity"
+3. post "/entities", to: "entities#create"
+4. get "/entities/:id", to: "entities#show", as: "entity"
+5. get "/entities/:id/edit", to: "entities#edit", as: "edit_entity"
+6. put "/entities/:id", to: "entities#update"
+7. patch "/entities/:id", to: "entities#update"
+8. delete "/entities/:id", to: "entities#destroy"
 ```
+Notes
+* must include one of or both routes 6 & 7
+* :id routes return anything (wildcard) and are to be placed under the root and name-associated route paths i.e. "/entities" & "/entities/new"
+* routes 3, 6, 7, & 8 do not need prefixes as routes 1, 2, 4, & 5 point to the same path and hold the prefix
 
 ##### Option 2
 Resource routing allows you to quickly declare all of the common routes for a given resourceful controller. Instead of declaring separate routes for your index, show, new, edit, create, update and destroy actions, a resourceful route declares them in a single line of code.
@@ -156,3 +176,10 @@ end
 In the MVC design patter, Views are the interface of an application. In Ruby on Rails, that refers to the actual web-page returned to a user.
 
 Views are usually placed under `./app/views`
+
+### X Command shortcuts
+
+| Command | shorthand |
+| ------ | ------ |
+| rails server | rails s |
+| rails generate | rails g |
