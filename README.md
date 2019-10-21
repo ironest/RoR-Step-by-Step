@@ -169,7 +169,7 @@ Validation
 Sometimes it's required to put in place an extra validation (aka constraints) on one or more column of a model. For example, there might be a reason only accept a record where a numeric value falls between a range. Or when a new record has a mandatory field (mandatory as in cannot be left empty/nil). An example on how to enforce validation rules, it's required to add similar instructions
 ```
 validates :name, :price, presence: true
-validates :price, numericity: {greater_than: 10}
+validates :price, numericality: {greater_than: 10}
 ```
 
 ### 8 Routes configuration
