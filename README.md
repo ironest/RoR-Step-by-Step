@@ -288,3 +288,26 @@ whitelisted_params = params.require(:toy).permit( :name,
                                                 )
 toy = Toy.create(whitelisted_params)
 ```
+
+### X Generating Form the "Rails way"
+
+Implementing a form in HTML can be tedius.
+Luckily, Rails offer a special HELPERS out of the box to generate a form, tailored on any model shape.
+In the example below, the form is generated on top of the "toy" model:
+
+```ruby
+<%= form_with(model: toy, local: true) do |form| %>
+
+    <%= form.label :name %>
+    <%= form.text_field :name %>
+  
+    <%= form.label :description %>
+    <%= form.text_area :description %>
+  
+    <%= form.label :date_posted %>
+    <%= form.date_select :date_posted %>
+
+    <%= form.submit %>
+
+<% end %>
+```
