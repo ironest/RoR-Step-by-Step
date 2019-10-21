@@ -121,6 +121,13 @@ Notes
 * `has_many` is followed by a plural symbol
 * a join table must have two `belongs_to` keywords
 
+Validation
+Sometimes it's required to put in place an extra validation (aka constraints) on one or more column of a model. For example, there might be a reason only accept a record where a numeric value falls between a range. Or when a new records has a mandatory field (mandatory as in cannot be left empty/nil). An exmaple on how to enforce validation rules, it's required to add similar instructions
+```
+validates :name, :price, presence: true
+validates :price, numericality: {greater_than: 10}
+```
+
 ### 8 Routes confiuguration
 Routes are configured inside `./config/routes.rb`
 
