@@ -292,8 +292,14 @@ toy = Toy.create(whitelisted_params)
 ### X Generating Form the "Rails way"
 
 Implementing a form in HTML can be tedius.
-Luckily, Rails offer a special HELPERS out of the box to generate a form, tailored on any model shape.
-In the example below, the form is generated on top of the "toy" model:
+Luckily, Rails offer a form HELPERS out of the box to generate a form, tailored on any model shape.
+Historically, there have been 3 helpers
+* `form_with`
+* `form_for`
+* `form_tag`
+Unfortunately, the last two are already marked as "deprecated" in Rails 5 and completely "removed" in Rails 6.
+
+In the example below, the form is generated on top of the "toy" model using the last available Rails-helper (form_with):
 
 ```ruby
 <%= form_with(model: toy, local: true) do |form| %>
