@@ -5,7 +5,7 @@
 rails new <proj-name> -d postgresql -T
 ```
 Notes:
-* Such commands creates a folder named `<proj-name>` inside of which the new Rails project will be created
+* Such commands create a folder named `<proj-name>` inside of which the new Rails project will be created
 * Inside the newly created project, a git repo will be initialized (meaning that `git init` is already issued)
 * SQlite3 database is default database used when a new Ruby on Rails application is created. If a different database is required, it can be specified with an adhoc option `-d`. To instruct Rails to ignore any database, at all, option `-O` can be used.
 * By providing the extra `-T`, the Rails project will skip the generation of any Test files.
@@ -22,7 +22,7 @@ Adds the named gem to the Gemfile and run `bundle install`.
 ```
 bundle install
 ```
-After a project is created (or cloned from github) it’s necessary to check whether any gem is needed. This commands reads from the Gemfile.
+After a project is created (or cloned from GitHub) it’s necessary to check whether any gem is needed. This command reads from the Gemfile.
 
 ### 4 Database Creation
 ```
@@ -42,19 +42,19 @@ This is a Model scaffold generator that produces two effects:
 Notes:
 * Entity must be capitalized
 * Entity must be singular
-* If Entity represents a join table, the naming convention becomes EntitiesEntity. The priority of Entities over Entity is determined by the alphabetic order.
-* Even though the Entity keyword is singular, the migration file produces a table having a plural form.
+* If Entity represents a join table, the naming convention becomes EntitiesEntity. The priority of Entities over Entity is determined by the alphabetic order. (e.g. If we want to create s join table for 'Books' and 'Genres', the Entity name will be 'BooksGenre' as 'B' comes before 'G')
+* Although the Entity keyword is singular, the migration file produces a table with a name in plural.
 
 ##### More examples of Model generation
 ```
-rails g model Author name:string date_of_birth:date
-rails g model Genre name:string
+rails g model Genre name:string                                                #table with 1 column
 rails g model Book title:string
-rails g model BooksGenre book:references genre:references
+rails g model Author name:string date_of_birth:date                            #table with multiple columns
+rails g model BooksGenre book:references genre:references                      #join table w/o additional columns
 rails g model Movie title:string rating:integer
 rails g model Actor name:string birthdate:date
-rails g model ActorsMovie movie:references actor:references character:string
-rails g model Image imageable:references{polymorphic} url:string
+rails g model ActorsMovie movie:references actor:references character:string   #join table w additional columns
+rails g model Image imageable:references{polymorphic} url:string               #polymorphic table
 ```
 ### 5.x Rails 5 native field types
 
@@ -77,7 +77,25 @@ rails g model Image imageable:references{polymorphic} url:string
 ```
 rails db:migrate
 ```
-The command applies any pending migrations. Pending migration means setting up tables in the database (or alter tables or drop tables). When running the migration command, it will look in db/migrate/ for any Ruby files and execute them starting from the oldest.
+The command applies to any pending migrations. Pending migration means setting up tables in the database (or alter tables or drop tables). When running the migration command, it will look in db/migrate/ for any Ruby files and execute them starting from the oldest.
+
+### Check Database Migration Status
+```
+rails db:migrate:status
+```
+
+If you are not sure whether you have run the Rails migration or not, you can use this command to check the migration status.
+
+If the status is down, then that means you have not run 'rails db:migrate' for this migration.
+
+
+    Status   Migration ID    Migration Name
+    --------------------------------------------------
+    up     20191014002535  Create books
+    up     20191014004145  Add overview to books
+    up     20191014005002  Add publisher and length to books
+    down    20191014005310  Add date to books                 #you haven't run db:migrate here
+
 
 ##### Migration generation
 Another way to generate migrations (other than from the Model generation) is to submit the commands such as:
@@ -101,19 +119,45 @@ rails db:migrate
 ```
 
 ### 7 Model association
-Even the simplest of the databases likely has models/tables with some osort of relationship with each other.
+Even the simplest databases might have models/tables with some sort of relationships with each other.
 Examples are:
 * one to one
 * one to many
 * many to many
 
-Even though at the Database level those relationship are already set up through FK, it's necessarily to replicate the integrity logic in the application layer. To do so, few changes have to be applied in the ruby files under `./app/models/`
+Even though at the Database level those relationships are already set up through FK, it's necessarily to replicate the integrity logic in the application layer. To do so, few changes have to be applied in the ruby files under `./app/models/`
 
 ```ruby
-belongs_to :movie
-has_one :address
-has_many :actors_movies
-has_many :actors, through: :actors_movies
+#[one to one]
+
+model/address.rb
+
+    belongs_to :author
+
+model/author.rb
+
+    has_one :address      #For 'has_one' relationship, the symbol ':address' is singular.
+
+#[one to many] We assume a book only has an author in this case.
+
+model/book.rb
+
+    belongs_to :author
+
+model/author.rb
+
+    has_many :books       #For 'has_many' relationship, the symbol ':books' is plural.
+
+#[join table: many to many]
+
+model/movie.rb
+    has_many :actors_movies
+    has_many :actors, through: :actors_movies
+
+model/actor.rb
+    has_many :actors_movies
+    has_many :movies, through: :actors_movies
+
 ```
 
 Notes
@@ -125,13 +169,13 @@ The rule of thumb is "Foo belongs to Bar if table Foo has a bar_id column".
 
 
 Validation
-Sometimes it's required to put in place an extra validation (aka constraints) on one or more column of a model. For example, there might be a reason only accept a record where a numeric value falls between a range. Or when a new records has a mandatory field (mandatory as in cannot be left empty/nil). An exmaple on how to enforce validation rules, it's required to add similar instructions
+Sometimes it's required to put in place an extra validation (aka constraints) on one or more column of a model. For example, there might be a reason only accept a record where a numeric value falls between a range. Or when a new record has a mandatory field (mandatory as in cannot be left empty/nil). An example on how to enforce validation rules, it's required to add similar instructions
 ```
 validates :name, :price, presence: true
 validates :price, numericality: {greater_than: 10}
 ```
 
-### 8 Routes confiuguration
+### 8 Routes configuration
 Routes are configured inside `./config/routes.rb`
 
 There are two possible options.
@@ -150,6 +194,8 @@ Notes
 * must include one of or both routes 6 & 7
 * :id routes return anything (wildcard) and are to be placed under the root and name-associated route paths i.e. "/entities" & "/entities/new"
 * routes 3, 6, 7, & 8 do not need prefixes as routes 1, 2, 4, & 5 point to the same path and hold the prefix
+* only 'get' routes will get a 'xxx.html.erb' file in our View
+* if you want to check whether you have set up routes correctly, run 'rails routes' in your terminal. If there is an error message, that means you did not set up your routes correctly.
 
 ##### Option 2
 Resource routing allows you to quickly declare all of the common routes for a given resourceful controller. Instead of declaring separate routes for your index, show, new, edit, create, update and destroy actions, a resourceful route declares them in a single line of code.
@@ -161,6 +207,11 @@ resources :entities
 ### 9 Controller creation
 
 Controller files have to be manually created under `./app/controller/`. The naming convention for such files is `entities_controller.rb` (everything lower-case and plural form).
+
+<b>!!! Important !!!</b> 
+- You will only need to manually create a model if you initially run 'rails g migration' to create a table(e.g. rails g migration AddOverviewToBooks overview:text).
+- If you run 'rails g model' to create a table(e.g. rails g model Books overview:text), you are NOT required to manually create a model. The 'rails g model' command will run rails model and rails migration at the same time for you.
+- In this case, we will usually run 'rails g model' to create a table. (You will only 'rails g migration' to create a table when you do NOT need a model.)
 
 The content of each controller starts with a class declaration having the following structure:
 
@@ -183,7 +234,7 @@ end
 ```
 
 ### 10 View creation
-In the MVC design patter, Views are the interface of an application. In Ruby on Rails, that refers to the actual web-page returned to a user.
+In the MVC design pattern, Views are the interface of an application. In Ruby on Rails, that refers to the actual webpage returned to a user.
 
 Views are usually placed under `./app/views` and they connect to the Controller via manually created directories and HTML.erb files of the routes. The directories are named after the Controllers. SASS files for the views are located in `./app/assets/stylesheets`.
 
@@ -214,9 +265,9 @@ Notes
     </form>
     <%= link_to("Create Milkshake", new_milkshake_path) %>
 ```
-`link_to` is a Rails helper method that hyperlinks pagesfor the user like the `<a href>` anchor tag and hypertext reference attribute in HTML.
+`link_to` is a Rails helper method that hyperlinks pages or the user like the `<a href>` anchor tag and hypertext reference attribute in HTML.
 
-The text and URL after the `link_to` method are arguements `("Create Milkshake", new_milkshake_path)`.
+The text and URL after the `link_to` method are arguments `("Create Milkshake", new_milkshake_path)`.
 
 Instead of hardcoding the route, the `_path` method can be used.
 
@@ -249,6 +300,7 @@ The `link_to` method takes an optional block `<% image_tag "Example" %>` where t
 | ------ | ------ |
 | rails server | rails s |
 | rails generate | rails g |
+| rails console | rails c |
 
 ### X Receiving `params` in the Controller
 
@@ -278,7 +330,7 @@ Common scenarios where such data is useful for a CRUD application are:
  * Being able to SHOW a specific resource (through the `:id` key)
  * Being able to DELETE a resource (through the `:id` key)
 
-The `params` structure is particularly convenient for actions such as CREATE and UPDATE where the whole data received under the key `toy` can be used as a whole to insert or modify an entire record in the database. However, such conveniency comes with risks: an attacker could potentially inject malicious code (from the browser or through postman) and corrupt the `params` variable.
+The `params` structure is particularly convenient for actions such as CREATE and UPDATE where the whole data received under the key `toy` can be used as a whole to insert or modify an entire record in the database. However, such convenience comes with risks: an attacker could potentially inject malicious code (from the browser or through postman) and corrupt the `params` variable.
 
 To prevent such dangerous risk, Rails blocks any attempt to bulk-load (aka mass-assignment) data into the database and spits out the error message **`ForbiddenAttributesError`**.
 That said, the mass-assignment is still possible, but an extra step is required by the developer: white-listing all the expected fields:
@@ -294,7 +346,7 @@ toy = Toy.create(whitelisted_params)
 
 ### X Generating Form the "Rails way"
 
-Implementing a form in HTML can be tedius.
+Implementing a form in HTML can be tedious.
 Luckily, Rails offer a form HELPERS out of the box to generate a form, tailored on any model shape.
 Historically, there have been 3 helpers
 * `form_with`
