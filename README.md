@@ -246,3 +246,45 @@ The `link_to` method takes an optional block `<% image_tag "Example" %>` where t
 | ------ | ------ |
 | rails server | rails s |
 | rails generate | rails g |
+
+### X Receiving `params` in the Controller
+
+Whenever a user requests a page, the controller has access to an internal structure named `params`. Usually, such object has a JSON structure containing the following information:
+```ruby
+{"controller"=>"entities", "action"=>"index"}
+```
+However, depending on which action/route a user navigates to, the structure `params` can have many more fields. For example, a more complex structure can be found after submitting a form:
+```ruby
+{
+    "_method"=>"patch", "authenticity_token"=>"3dAphlkbjQ4YBD2KKx9orzIHM4hRrOQWfpkiTQsdMRTgo8GoHuiSwr2YPbWH4msf76VpHDrvf0a37qurlaLP7A==",
+    "toy"=>
+    {
+        "name"=>"Mario Kart Wii",
+        "description"=>"Racing video game developed and published by Nintendo",
+        "posted"=>"2018-10-26",
+        "user"=>"Chelsea"
+    },
+    "commit"=>"Update",
+    "controller"=>"toys",
+    "action"=>"update",
+    "id"=>"8"
+}
+```
+When such structure is received by the controller, data sent from the browser is available to be used.
+Common scenarios where such data is useful for a CRUD application are:
+ * Being able to SHOW a specific resource (through the `:id` key)
+ * Being able to DELETE a resource (through the `:id` key)
+
+The `params` structure is particularly convenient for actions such as CREATE and UPDATE where the whole data received under the key `toy` can be used as a whole to insert or modify an entire record in the database. However, such conveniency comes with risks: an attacker could potentially inject malicious code (from the browser or through postman) and corrupt the `params` variable.
+
+To prevent such dangerous risk, Rails blocks any attempt to bulk-load (aka mass-assignment) data into the database and spits out the error message **`ForbiddenAttributesError`**.
+That said, the mass-assignment is still possible, but an extra step is required by the developer: white-listing all the expected fields:
+
+```ruby
+whitelisted_params = params.require(:toy).permit( :name,
+                                                  :description,
+                                                  :posted,
+                                                  :user
+                                                )
+toy = Toy.create(whitelisted_params)
+```
