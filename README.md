@@ -120,6 +120,9 @@ Notes
 * `has_one` is followed by a singular symbol
 * `has_many` is followed by a plural symbol
 * a join table must have two `belongs_to` keywords
+* Sometime it's tricky to distinguish when to use `has_one` from `belongs_to`.
+The rule of thumb is "Foo belongs to Bar if table Foo has a bar_id column".
+
 
 Validation
 Sometimes it's required to put in place an extra validation (aka constraints) on one or more column of a model. For example, there might be a reason only accept a record where a numeric value falls between a range. Or when a new records has a mandatory field (mandatory as in cannot be left empty/nil). An exmaple on how to enforce validation rules, it's required to add similar instructions
