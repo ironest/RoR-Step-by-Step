@@ -288,6 +288,28 @@ Instead of hardcoding the route, the `_path` method can be used.
 
 The `link_to` method takes an optional block `<% image_tag "Example" %>` where the content of the block becomes the clickable hyperlinked item (text, image, other HTML element).
 
+### 10.X Partials
+
+Partials - aka partial templates - allow us to create reuseable HTML code fragments to keep code DRY and save us from altering code in multiple files. The most prominent example of when to use partials is building a login form that you want to display on 10 different pages on your site.
+
+Naming convention for partials is to begin with an underscore: `_form.html.erb`. Partials are usually saved under the corresponding Controller name inside of the Views directory `./app/views/directory_name`. Partials can also be saved in a directories called `./app/views/shared` to keep them from getting lost inside the View directories. Once created, partials communicate with the files where they are required via the render function. Partials are displayed on screen (rendered) using the render method inside a View, below:
+
+```ruby
+<%= render "form" %>
+```
+
+This will render the file `_form.html.erb`.
+
+```ruby
+<%= render "shared/form" %>
+```
+
+This will render the file `shared/_form.html.erb`.
+
+Remember
+* Partials use local variables **not** class @instance variables
+
+
 ### X Rails command table
 
 | Command | Description |
