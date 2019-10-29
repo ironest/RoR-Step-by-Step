@@ -17,6 +17,46 @@ bundle add <gem-name>
 Adds the named gem to the Gemfile and run `bundle install`.
 `bundle install` can be avoided by using the flag `--skip-install`.
 
+### 2.X Authentification Devise Gem
+
+Devise is a gem that adds authentication to Rails applications and uses the *Cookie / Session* method of web application authentification. For Devise, Authentication is saved in the session on the server and referenced by a cookie saved in the users browser. To install Devise:
+
+*Add Gem*
+```
+bundle add devise
+```
+*Open Rails App*
+```
+code .
+```
+*Install Gem*
+```
+rails generate devise:install
+```
+Devise then generates 4 instructions to be manually modified inside the Rails App. They are (summarised):
+
+1. Define default url options in development environments files `./config/environments/development.rb`
+
+Add this line above the `end` in Rails App:
+```ruby
+config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
+```
+
+2. Define root_url in `./config/routes.rb.`
+For example: `get "/", to: "pages#home", as: "root"`
+
+3. Add *flash messages* in `./app/views/layouts/application.html.erb.` between `<body>` body tags but above `<%= yield %>`.
+
+```ruby
+<p class="notice"><%= notice %></p>
+<p class="alert"><%= alert %></p>
+```
+
+4. Copy Devise views to Rails App. Devise views contain pre-built messaging functionality.
+
+```
+rails g devise:views
+```
 
 ### 3 Setting up the project
 ```
