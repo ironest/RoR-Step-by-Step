@@ -85,6 +85,19 @@ rails db:create
 When a Rails application is created for the first time, it will not have a database yet. To be create one, those commands are needed.
 The command initializes/creates a database (named after the project). To be more accurate, it creates two versions of the same DB. one for development and one for testing purposes.
 
+### 4.X Seeding the database
+
+#### Setup
+`rails db:setup` creates the database, loads the schema, and initialises the schema with the seed data (Faker Gem).
+
+#### Resetting
+Drop a database and set it up again using `rails db:reset`. This is the same as running:
+
+```ruby
+rails db:drop
+rails db:setup
+```
+
 ### 5 Model generation
 ```
 rails g model <Entity> <column>:<datatype> <column>:<datatype>
