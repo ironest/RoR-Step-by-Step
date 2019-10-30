@@ -58,6 +58,20 @@ For example: `get "/", to: "pages#home", as: "root"`
 rails g devise:views
 ```
 
+Next, generate the loggedin/logged out Model
+```
+rails generate devise User
+rails db:migrate
+```
+
+Check out Devise User routes by running
+```
+rails routes
+```
+
+Notes:
+- Initial User Routes do not need to be manually created as Devise creates User routes in the `./config/routes.rb file` at the time of User Model generation and injects this line of code into the routes file `devise_for :users`.
+
 ### 3 Setting up the project
 ```
 bundle install
@@ -119,6 +133,9 @@ rails db:migrate
 ```
 The command applies to any pending migrations. Pending migration means setting up tables in the database (or alter tables or drop tables). When running the migration command, it will look in db/migrate/ for any Ruby files and execute them starting from the oldest.
 
+Notes:
+- `rails db:migrate` checks which missing migrations still need to be applied to the database without considering the previouse migrations.
+
 ### Check Database Migration Status
 ```
 rails db:migrate:status
@@ -147,6 +164,9 @@ rails g migration CreateBooks title:string author:string rating:integer
 # Adding columns
 rails g migration AddOverviewToBooks overview:string
 
+# Adding multiple columns
+rails g migration AddOverviewToBooks overview:string genre:string blurb:text
+
 # Removing columns
 rails g migration RemovePublisherFromBooks column:datatype
 
@@ -157,6 +177,10 @@ rails db:migrate
 
 # Go to VScode, change models containing old column name
 ```
+
+Notes:
+- Everytime a new migration is created, it is added to the `./db/migrate/` directory ready to be synched with the database after running `rails db:migrate`.
+- Adding a column with an underscore such as `first_name` does not include the underscore: `rails g migration AddFirstNameToUser first_name:string`.
 
 ### 7 Model association
 Even the simplest databases might have models/tables with some sort of relationships with each other.
@@ -216,6 +240,7 @@ validates :price, numericality: {greater_than: 10}
 ```
 
 ### 8 Routes configuration
+
 Routes are configured inside `./config/routes.rb`
 
 There are two possible options.
