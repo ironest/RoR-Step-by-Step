@@ -72,6 +72,39 @@ rails routes
 Notes:
 - Initial User Routes do not need to be manually created as Devise creates User routes in the `./config/routes.rb file` at the time of User Model generation and injects this line of code into the routes file `devise_for :users`.
 
+### 2.X Stripe Gem
+
+Web apps taking payment with no backend to hold credit card information will require a payment merchant such as Stripe (that handles PCI compliance).
+
+1. *Install Stripe Gem*
+```
+bundle add stripe
+```
+2. Create a new file `stripe.rb` in `./config/initializers`. Add the following code (Rails 5.2 compliant):
+
+```ruby
+Stripe.api_key = Rails.application.credentials.dig(:stripe, :secret)
+```
+
+3. Login to Stripe>Developers>APIkeys *(location of publishable and secret keys)*
+
+4. Press 'reveal' on secret key and copy it
+
+5. Add command `EDITOR="code --wait" rails credentials:edit`, press *upon pressing enter button YAML file will pop up* - this is where the following information goes.
+
+6. On a new line underneath the YAML file code, add the following:
+
+```ruby
+stripe:
+  secret: <add secret key>
+  public: <add public key>
+```
+*There must be 2 spaces before the words `stripe` and `public` and one space after their corresponding `:`.
+
+7. Go to Stripe, copy and paste public (publishable) key.
+
+8. Save the keys by exiting the opened credentials file *CLI will annotate the file saving by adding `New credentials encrypted and saved.`
+
 ### 3 Setting up the project
 ```
 bundle install
@@ -111,6 +144,8 @@ Notes:
 * Entity must be singular
 * If Entity represents a join table, the naming convention becomes EntitiesEntity. The priority of Entities over Entity is determined by the alphabetic order. (e.g. If we want to create s join table for 'Books' and 'Genres', the Entity name will be 'BooksGenre' as 'B' comes before 'G')
 * Although the Entity keyword is singular, the migration file produces a table with a name in plural.
+* Models must be added to Rails (ran in CLI) in the following order: (1) tables have no foreign keys, (2) tables have foreign keys. This is because Rails cannot implement `:references` for the `foreign_key` if the table has no column to reference to.
+* `foreign_key` columns reference the `id` of another table and are represented as `user:references` not `user_id:references`.
 
 ##### More examples of Model generation
 ```
@@ -190,6 +225,17 @@ rails db:migrate
 
 # Go to VScode, change models containing old column name
 ```
+
+#### 6.X Dropping a table
+
+Create a migration to manully drop the table:: 
+
+```bash
+rails g migration Drop<Books>Table
+rake db:migrate
+```
+
+This generates the empty `.rb` file in `./db/migrate/` that mmust be filled to drop the table.
 
 Notes:
 - Everytime a new migration is created, it is added to the `./db/migrate/` directory ready to be synched with the database after running `rails db:migrate`.
